@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Home Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="output.css">
+  <link rel="stylesheet" href="css/fontawesome.min.css">
+</head>
+
+<body class="flex flex-col">
+    <div class="absolute start-page top-36 left-0 w-screen py-40 bg-white flex flex-col items-center">
+          <p class="text-gray-600 text-lg font-extrabold text-center mb-2">Enter your reg. number</p>
+          <input type="number" placeholder="" class="border rounded-xl py-2 px-4 mb-4">
+          <button class="start bg-green-600 py-2 px-6 rounded-xl text-white font-bold text-xl">START</button>
+    </div>
+  <div class="relative w-full flex flex-col card hidden">
+      <img src="images/back5.png" height="800" class="w-full">
+      <div class="absolute w-full top-16 left-0">
+        <div class="bg-black text-white font-bold rounded-2xl p-4 w-[72%] mx-auto">
+          <div class="flex items-center justify-between mb-12">
+            <select class="bg-black border-none text-5xl font-bold text-purple-300 w-[52%]">
+              	<option class=""><button>Maths</button></option>
+              	<option><button>English</button></option>
+              	<option><button>Physics</button></option>
+              	<option><button>Chemistry</button></option>
+          	</select>
+              <div class="flex flex-col items-center">
+                  <p id="timer" class="text-purple-500 font-extrabold text-2xl">02:00:00</p>
+              </div>
+          </div>
+          
+          <div class="flex w-full items-center justify-between mb-4">
+              <button class="prev w-[40%] bg-red-600 px-6 py-3 rounded-xl text-white">PREV</button>
+              <button class="next w-[40%] bg-green-600 px-6 py-3 rounded-xl text-white">NEXT</button>
+          </div>
+          
+          <div class="flex items-start">
+              <div class="text-2xl bg-blue-600 p-4 mr-4 rounded-full font-extrabold">1</div>
+              <div class="text-start text-purple-300 text-xl font-bold">
+                  <p class="questions"></p>
+              </div>
+          </div>
+          
+          <div class="options"></div>
+          <div class="flex justify-center">
+              <button class="submit bg-purple-300 py-3 px-16 rounded-xl text-white mt-4">SUBMIT</button>
+          </div>
+          
+      </div>
+      </div>
+  </div>
+  
+  <div class="results flex items-center text-5xl"></div>
+
+    <script>
+        const questions = document.querySelector(".questions");
+        const results = document.querySelector(".results");
+        const start = document.querySelector(".start");
+        const startPage = document.querySelector(".start-page");
+        const card = document.querySelector(".card");
+        const selected = document.querySelector("input[name='option']:checked");
+        const options = document.querySelector(".options");
+        const submit = document.querySelector(".submit");
+        const nextBtn = document.querySelector(".next");
+        const prevBtn = document.querySelector(".prev");
+        
+        fetch("data.json")
+   		 .then(response => response.json())
+   		 .then(data => {
+                let i = 0;
+                let correct = 0;
+                
+                function opt() {
+                    const options = document.querySelector(".options");
+                    options.innerHTML =  `
+                    	<div class="flex w-full items-center gap-4 mt-4">
+              			<div class="flex w-full items-center">
+                 			 <p class="text-blue-600 font-extrabold text-xl">A.</p>
+                 			 <input type="radio" value="${data[i].optionA}" name="option" placeholder="${data[i].optionA}" class="bg-blue-600 p-3 rounded-xl text-white">
+                			  <button class="bg-blue-600 p-3 w-[40%] rounded-xl text-white">${data[i].optionA}</button>
+             			 </div>
+              			<div class="flex w-full items-center">
+                 			 <p class="text-blue-600 font-extrabold text-xl">B.</p>
+                  			<input type="radio" value="${data[i].optionB}" name="option" placeholder="${data[i].optionB}" class="bg-blue-600 p-3 rounded-xl text-white">
+                 			 <button class="bg-blue-600 p-3 w-[40%] rounded-xl text-white">${data[i].optionB}</button>
+              			</div>
+          			  </div>
+          
+         			   <div class="flex w-full items-center gap-4 mt-4">
+              			<div class="flex w-full items-center">
+                 			 <p class="text-blue-600 font-extrabold text-xl">C.</p>
+               			   <input type="radio" value="${data[i].optionC}" name="option" placeholder="${data[i].optionC}" class="bg-blue-600 p-3 rounded-xl text-white">
+                 			 <button class="bg-blue-600 w-[40%] p-3 rounded-xl text-white">${data[i].optionC}</button>
+             			 </div>
+             			 <div class="flex w-full items-center">
+                  			<p class="text-blue-600 font-extrabold text-xl">D.</p>
+                			  <input type="radio" value="${data[i].optionD}" name="option" placeholder="${data[i].optionD}" class="bg-blue-600 p-3 rounded-xl text-white">
+               			   <button class="bg-blue-600 p-3 w-[40%] rounded-xl text-white">${data[i].optionD}</button>
+              			</div>
+         			   </div>
+                    `;
+                }
+                start.addEventListener("click", () => {
+            		card.classList.remove("hidden");
+                    startPage.classList.add("hidden");
+                    questions.innerHTML = data[i].question;
+                    opt();
+                });
+                
+                nextBtn.addEventListener("click", () => {
+                    const selected = document.querySelector("input[name='option']:checked");
+                    if (data[i].answer == selected.value) {
+                        correct++;
+                	}
+                	i++;
+                    
+                    questions.innerHTML = data[i].question;
+                    opt();
+                });
+                
+                prevBtn.addEventListener("click", () => {
+                    questions.innerHTML = data[i].question;
+                    opt();
+                    i--;
+                });
+                
+                submit.addEventListener("click", () => {
+                    startPage.classList.add("hidden");
+                    card.innerHTML = correct + "/40";
+                });
+    		})
+  		  .catch(error => {
+     	 	  console.error(error);
+  		  });
+        
+        let time = 2 * 60 * 60; // 2 hours in seconds
+
+const timer = document.getElementById("timer");
+
+const interval = setInterval(() => {
+    let hours = Math.floor(time / 3600);
+    let minutes = Math.floor((time % 3600) / 60);
+    let seconds = time % 60;
+
+    timer.textContent =
+        String(hours).padStart(2, "0") + ":" +
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+
+    if (time === 0) {
+        clearInterval(interval);
+        alert("Time is up!");
+    }
+
+    time--;
+}, 1000);
+    </script>
+</body>
+</html>
